@@ -1,23 +1,26 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
-	"log"
+	"os"
 
 	"github.com/kcasctiv/dbf3"
 )
 
 func main() {
 
-	file, err := dbf3.OpenFile("DIST_DTL.DBF")
-	if err != nil{
-		log.Fatalln(err)
+	f, err := os.Open("DIST_DTL.DBF")
+	if err != nil {
+		panic(err)
 	}
 
-	// file := dbf3.New(langDriver)
+	rc := bufio.NewReader(f)
 
-	// Change language driver
-	// file.SetLang(newDriver)
+	file, err := dbf3.Open(rc)
+	if err != nil {
+		panic(err)
+	}
 
 	// Get values
 	fields := file.Fields()
