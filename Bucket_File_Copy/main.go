@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"context"
-	"fmt"
 	"log"
 	"os"
 
@@ -43,19 +42,7 @@ func main() {
 		panic(err)
 	}
 
-	// Get values
-	var header []string
-	// fields := file.Fields()
-	//Headers
-	for _, field := range file.Fields() {
-		header = append(header, field.Name())
-	}
-	fmt.Println(":", header)
+	err = file.SaveFile("Copied.DBF")
+	log.Println("Here:", err)
 
-	// for idx := 0; idx < file.Rows(); idx++ {
-	// 	for _, field := range fields {
-	// 		value, _ := file.Get(idx, field.Name())
-	// 		fmt.Println(value)
-	// 	}
-	// }
 }

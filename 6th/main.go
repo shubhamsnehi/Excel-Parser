@@ -3,9 +3,11 @@ package main
 import (
 	"bufio"
 	"context"
+	"encoding/csv"
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"cloud.google.com/go/storage"
 	"github.com/kcasctiv/dbf3"
@@ -13,6 +15,13 @@ import (
 
 func main() {
 	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "C:\\Users\\Shubham Snehi\\Downloads\\awacs-dev-160bf0e57dc1.json")
+
+	csvFile, err := os.Create("./OrderDetails.csv")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer csvFile.Close()
+	writer := csv.NewWriter(csvFile)
 
 	ctx := context.Background()
 
@@ -28,7 +37,7 @@ func main() {
 	// Creates a Bucket instance.
 	bucket := client.Bucket(bucketName)
 
-	obj := bucket.Object("SALE_DTL.DBF") // see https://developer.bestbuy.com/apis
+	obj := bucket.Object("Excel1.xlsx") // see https://developer.bestbuy.com/apis
 
 	rdr, err := obj.NewReader(ctx)
 	if err != nil {
@@ -43,19 +52,17 @@ func main() {
 		panic(err)
 	}
 
-	// Get values
-	var header []string
-	// fields := file.Fields()
-	//Headers
-	for _, field := range file.Fields() {
-		header = append(header, field.Name())
-	}
-	fmt.Println(":", header)
 
-	// for idx := 0; idx < file.Rows(); idx++ {
-	// 	for _, field := range fields {
-	// 		value, _ := file.Get(idx, field.Name())
-	// 		fmt.Println(value)
-	// 	}
-	// }
+	line := strings.Split(string(dataArr), "\n")
+
+	for _, val := range line {
+		var row2 []string
+		row := strings.Split(string(val), ";")
+		for _, val2 := range row {
+			// fmt.Println(i,":",strings.TrimSpace(val2))
+			row2 = append(row2, strings.TrimSpace(val2))
+		}
+		writer.Write(row2)
+	}
+	writer.Flush()
 }
